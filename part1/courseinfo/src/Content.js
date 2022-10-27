@@ -1,10 +1,12 @@
+import ContentPart from "./ContentPart";
+
 const Content = (props) => {
     return (
-        <>
+        <div>
             {props.courseParts.map((part) => (
-                <p>{part.title} {part.exercises}</p>
+                <ContentPart part={part} />
             ))}
-        </>
+        </div>
     )
 }
 
