@@ -1,5 +1,5 @@
 const Total = (props) => {
-    const totalValue = props.courseParts.reduce((acc, value) => {
+    const totalValue = props.course.courseParts.reduce((acc, value) => {
         return acc + value.exercises;
     }, 0)
 
