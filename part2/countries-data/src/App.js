@@ -22,8 +22,6 @@ function App() {
     const newFilteredList = countries.filter(country => country.name.common.toLowerCase().includes(lowerCaseFilter));
 
     setFilteredCountries(newFilteredList);
-
-    console.log(newFilteredList);
   }
 
   return (

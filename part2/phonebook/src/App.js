@@ -1,22 +1,26 @@
 import { useState, useEffect } from 'react'
 import { Filter } from './components/Filter'
 import { Form } from './components/Form'
+import { Notification } from './components/Message';
 import { PhonebookList } from './components/PhonebookList'
-import axios from 'axios';
+import { createNewPerson, deletePerson, getAllPersons } from './services/phones';
 
 const App = () => {
-  const [persons, setPersons] = useState([]) 
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')
+  const [persons, setPersons] = useState([]);
+  const [newName, setNewName] = useState('');
+  const [newNumber, setNewNumber] = useState('');
+  const [filteredPerson, setFilteredPersons] = useState(persons);
+  const [message, setMessage] = useState({message: 'some error happened', isError: true});
   
   useEffect(() => {
-    axios.get('http://localhost:3001/persons')
-    .then((response) => {
-      setPersons(response.data)
-    })
+    getAllPersons().then(resp => { setPersons(resp); setFilteredPersons(resp)})
   }, [])
-  
-  const [filteredPerson, setFilteredPersons] = useState(persons)
+
+  const deleteNumber = (event) => {
+    if(window.confirm('Delete person?')) {
+      deletePerson(Number(event.target.id)).then(() => getAllPersons().then(resp => setFilteredPersons(resp)))
+    }
+  }
   
   const addNewName = (event) => {
     setNewName(event.target.value)
@@ -41,7 +45,13 @@ const App = () => {
     if(Object.values(persons).some(person => person.name === newName)) {
       window.alert(`${newName} already added to phonebook. Try a different person.`)
     } else {
-      setPersons(persons.concat(person))
+      createNewPerson(person).then(() => {
+        getAllPersons().then(resp => setFilteredPersons(resp));
+        setMessage({
+          message: `Added ${person.name}`,
+          isError: false
+        })
+      })
     }
 
     setNewName('')
@@ -51,7 +61,7 @@ const App = () => {
   const filterName = (name) => {
     const lowerCaseName = name.toLowerCase();
 
-    const newList = persons.filter(person => person.name.toLowerCase() === lowerCaseName);
+    const newList = persons.filter(person => person.name.toLowerCase().includes(lowerCaseName));
 
     setFilteredPersons(newList);
   }
@@ -60,9 +70,10 @@ const App = () => {
   return (
     <div>
       <h2>PhoneBook</h2>
+      <Notification message={message.message} isError={message.isError} />
       <Filter filterFunc={filterFunction} />
       <Form submitFunc={addName} nameValue={newName} setNameFunc={addNewName} numberValue={newNumber} setNumberFunc={addNewNumber} />
-      <PhonebookList persons={filteredPerson}/>
+      <PhonebookList persons={filteredPerson} deleteFunction={deleteNumber}/>
     </div>
   )
 }

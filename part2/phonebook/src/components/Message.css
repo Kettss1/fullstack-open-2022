@@ -1,0 +1,13 @@
+div.message {
+    padding: 10px;
+    width: 100%;
+    height: 28px;
+    display: flex;
+    align-items: center;
+}
+
+div.message.false {
+    background: rgba(0, 128, 0, 0.527);
+    border: 2px solid green;
+    border-radius: 10px;
+}
